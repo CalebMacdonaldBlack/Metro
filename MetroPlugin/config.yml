@@ -1,0 +1,74 @@
+StraightEastWestsides:
+  - east
+  - west
+StraightNorthSouthsides:
+  - south
+  - north
+BendNorthEastsides:
+  - east
+  - south
+BendNorthWestsides:
+  - south
+  - west
+BendSouthEastsides:
+  - east
+  - north
+BendSouthWestsides:
+  - north
+  - west
+Juctionsides:
+  - north
+  - east
+  - south
+  - west  
+JuctionCompnorth:
+  - StraightNorthSouth
+JuctionCompeast:
+  - StraightEastWest
+JuctionCompsouth:
+  - StraightNorthSouth
+JuctionCompwest:
+  - StraightEastWest
+StraightEastWestCompeast:
+  - StraightEastWest
+  - BendNorthWest
+  - BendSouthWest
+StraightEastWestCompwest:
+  - StraightEastWest
+  - BendSouthEast
+  - BendNorthEast
+StraightNorthSouthCompnorth:
+  - StraightNorthSouth
+  - BendNorthEast
+  - BendNorthWest
+StraightNorthSouthCompsouth:
+  - StraightNorthSouth
+  - BendSouthEast
+  - BendSouthWest
+BendNorthEastCompsouth:
+  - StraightNorthSouth
+BendNorthEastCompeast:
+  - StraightEastWest
+BendNorthWestCompsouth:
+  - StraightNorthSouth
+BendNorthWestCompwest:
+  - StraightEastWest
+BendSouthEastCompnorth:
+  - StraightNorthSouth
+BendSouthEastCompeast:
+  - StraightEastWest
+BendSouthWestCompwest:
+  - StraightEastWest
+BendSouthWestCompnorth:
+  - StraightNorthSouth
+
+
+
+
+
+
+
+
+
+
+

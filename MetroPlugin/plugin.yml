@@ -1,0 +1,8 @@
+name: MetroGen
+main: gigabytedx.Main
+version: 1.00
+description: >
+             Players can protect their stuff simply by placing a block.
+commands:
+  createmodule:
+  generate:
