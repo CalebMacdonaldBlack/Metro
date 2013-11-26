@@ -148,6 +148,13 @@ public class Main extends JavaPlugin {
 			//create new generator
 			Generator.moduleChuncks.add("0.0");
 			generators.add(new Generator(this, new Mod(0, 0, "StraightSouthNorth"), 0, 0));
+		} else if (commandLabel.equalsIgnoreCase("load") && args.length == 1){
+			try {
+				//get array from file and paste it above the old one
+				setBlocks((String[]) ReadAndWrite.read("ModuleData/" + args[0] + "_BlockTypes", getDataFolder()), (Byte[]) ReadAndWrite.read("ModuleData/" + args[0] + "_BlockData", getDataFolder()), 0, 0);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}

@@ -42,17 +42,17 @@ public class Generator {
 					if (mod.getX() + getDirX((String) x) == prevX && mod.getZ() + getDirZ((String) x) == prevZ) {
 					} else {
 
-						try {
-							String newModName = getRandModule((String) x, checkAroundModule(x));
-							// Generator.moduleChuncks.add(mod.getX() / 16 +
-							// getDirX((String) x) / 16 + "." + mod.getZ() / 16
-							// + getDirZ((String) x) / 16);
-							// setCheckedBlocks(mod.getX()+ getDirX((String) x),
-							// mod.getZ() + getDirZ((String) x));
-							newGenerator(new Mod(mod.getX() + getDirX((String) x), mod.getZ() + getDirZ((String) x), newModName), mod.getX(), mod.getZ());
-						} catch (NullPointerException e) {
-							placeModule(new Mod(mod.getX() + getDirX((String) x), mod.getZ() + getDirZ((String) x), "TunnelEnd"));
+						// try {
+						String newModName = getRandModule((String) x, checkAroundModule(x));
+						if (newModName != null){
+						Generator.moduleChuncks.add(mod.getX() / 16 + getDirX((String) x) / 16 + "." + mod.getZ() / 16 + getDirZ((String) x) / 16);
+						setCheckedBlocks(mod.getX() + getDirX((String) x), mod.getZ() + getDirZ((String) x));
+						newGenerator(new Mod(mod.getX() + getDirX((String) x), mod.getZ() + getDirZ((String) x), newModName), mod.getX(), mod.getZ());
 						}
+						// } catch (NullPointerException e) {
+						// placeModule(new Mod(mod.getX() + getDirX((String) x),
+						// mod.getZ() + getDirZ((String) x), "TunnelEnd"));
+						// }
 
 					}
 				}
@@ -61,31 +61,53 @@ public class Generator {
 
 			private List<String> checkAroundModule(Object x) {
 
-				List<String> moduleList = getCompatList(x);
+				@SuppressWarnings("unchecked")
+				List<String> moduleList = (List<String>) Main.moduleConfigurations.get(mod.getName()).getList((String) x + "Compat");
+				System.out.println("MOD.GETNAme  " + mod.getName());
+				System.out.println("X  " + x);
 				List<String> compatablelist = new ArrayList<String>();
+				if (moduleList.get(0).equals("NIL"))
+					return compatablelist;
 				int checks = 1;
 				for (String module : moduleList) {
-
+					if (Main.moduleConfigurations.get(module).getBoolean("Ignore")) {
+						compatablelist.add(module);
+						System.out.println("RETURNIN");
+						return compatablelist;
+					}
+					System.out.println("Module  " + module);
 					for (Object side : Main.moduleConfigurations.get(module).getList("Sides")) {
+						System.out.println("Side  " + side);
 
 						for (Object s : Main.moduleConfigurations.get(module).getList((String) side)) {
+							System.out.println("String" + s);
 
-							if (containsModule(mod.getX() + getDirX((String) x) + getXCoordString(s), mod.getZ() + getDirZ((String) x) + getZCoordString(s)) && notPrev(x, s)) {
-								break;
-							} else if (!containsModule(mod.getX() + getDirX((String) x) + getXCoordString(s), mod.getZ() + getDirZ((String) x) + getZCoordString(s)) && notPrev(x, s)) {
-								checks++;
-							}
+							if (s.equals("NIL")) {
+								System.out.println("NIL BREAK");
+							} else {
 
-							if (checks == Main.moduleConfigurations.get(module).getList("Sides").size()) {
-								checks = 1;
-								compatablelist.add(module);
+								if (containsModule(mod.getX() + getDirX((String) x) + getXCoordString(s), mod.getZ() + getDirZ((String) x) + getZCoordString(s)) && notPrev(x, s)) {
+									System.out.println(mod.getX() + getDirX((String) x) + getXCoordString(s));
+									System.out.println("BREAKING");
+									break;
+								} else if (!containsModule(mod.getX() + getDirX((String) x) + getXCoordString(s), mod.getZ() + getDirZ((String) x) + getZCoordString(s)) && notPrev(x, s)) {
+									System.out.println("RUNNIGN");
+									checks++;
+								}
 
+								if (checks == Main.moduleConfigurations.get(module).getList("Sides").size()) {
+									System.out.println("ADDING");
+									checks = 1;
+									System.out.println("LIST SIZE!!!!!                   " + compatablelist.size());
+									compatablelist.add(module);
+
+								}
 							}
 						}
-
 					}
 
 				}
+				System.out.println("RETURNINGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" + compatablelist.size());
 				return compatablelist;
 
 			}
@@ -98,22 +120,7 @@ public class Generator {
 				return true;
 			}
 
-			private List<String> getCompatList(Object x) {
-
-				switch ((String) x) {
-				case "North":
-					return Main.northCompat;
-				case "East":
-					return Main.eastCompat;
-				case "South":
-					return Main.southCompat;
-				case "West":
-					return Main.westCompat;
-				}
-				return null;
-			}
-
-		}, 100);
+		}, 50);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -183,35 +190,56 @@ public class Generator {
 	}
 
 	private String getRandModule(String side, List<String> list) {
-
-		String temp;
+		System.out.println(list.size());
+		System.out.println("DOES THIS WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		String temp = null;
+		List<String> cords = new ArrayList<String>();
 
 		if (list.size() != 0) {
 			int idx = new Random().nextInt(list.size());
 			temp = (String) list.get(idx);
-		} else {
-			temp = null;
 		}
-		for (Object sids : Main.moduleConfigurations.get(temp).getList("Sides")) {
+		try {
+			System.out.println("CHOSEN MODULE      " + temp);
+			if (Main.moduleConfigurations.get(temp).getBoolean("Ignore"))
+				return temp;
+			for (Object sids : Main.moduleConfigurations.get(temp).getList("Sides")) {
 
-			for (Object string : Main.moduleConfigurations.get(temp).getList((String) sids)) {
+				for (Object string : Main.moduleConfigurations.get(temp).getList((String) sids)) {
 
-				if (mod.getX() == getXCoordString(string) + mod.getX() + getDirX(side) && mod.getZ() == mod.getZ() + getDirZ(side) + getZCoordString(string)) {
-				} else {
+					if (string.equals("NIL")) {
+						System.out.println("NIL BREAK");
+					}else{
 
-					moduleChuncks.add((getDirX(side) / 16 + mod.getX() / 16 + getXCoordString(string) / 16) + "." + (getDirZ(side) / 16 + mod.getZ() / 16 + getZCoordString(string) / 16));
+					if (mod.getX() == getXCoordString(string) + mod.getX() + getDirX(side) && mod.getZ() == mod.getZ() + getDirZ(side) + getZCoordString(string)) {
 
-					setCheckedBlocks(getDirX(side) + mod.getX() + getXCoordString(string), getDirZ(side) + mod.getZ() + getZCoordString(string));
+					} else if (!containsModule(getXCoordString(string) + mod.getX() + getDirX(side), mod.getZ() + getDirZ(side) + getZCoordString(string))) {
 
-					Bukkit.broadcastMessage("   side" + side);
-					Bukkit.broadcastMessage("   temp " + temp);
-					Bukkit.broadcastMessage("   string" + string);
-					Bukkit.broadcastMessage("---------------------------------");
-					Bukkit.broadcastMessage("---------------------------------");
-					Bukkit.broadcastMessage("---------------------------------");
+						moduleChuncks.add((getDirX(side) / 16 + mod.getX() / 16 + getXCoordString(string) / 16) + "." + (getDirZ(side) / 16 + mod.getZ() / 16 + getZCoordString(string) / 16));
+						cords.add((getDirX(side) / 16 + mod.getX() / 16 + getXCoordString(string) / 16) + "." + (getDirZ(side) / 16 + mod.getZ() / 16 + getZCoordString(string) / 16));
+						setCheckedBlocks(getDirX(side) + mod.getX() + getXCoordString(string), getDirZ(side) + mod.getZ() + getZCoordString(string));
 
+						Bukkit.broadcastMessage("   side" + side);
+						Bukkit.broadcastMessage("   temp " + temp);
+						Bukkit.broadcastMessage("   string" + string);
+						Bukkit.broadcastMessage("---------------------------------");
+						Bukkit.broadcastMessage("---------------------------------");
+						Bukkit.broadcastMessage("---------------------------------");
+
+					} else {
+						System.out.println("Module In Use");
+						list.remove(temp);
+						for(String x:cords){
+							moduleChuncks.remove(x);
+						}
+						return getRandModule(side, list);
+					}
+				}
 				}
 			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
 		}
 		return temp;
 
