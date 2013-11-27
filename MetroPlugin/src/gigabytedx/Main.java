@@ -25,10 +25,11 @@ public class Main extends JavaPlugin {
 	static String pluginName;
 	static boolean isDebugModeEnabled = true;
 	int xCount = 0, zCount = 0;
-	String[] materials = new String[256];
-	Byte[] data = new Byte[256];
+	String[] materials = new String[4096];
+	Byte[] data = new Byte[4096];
 	public static File file;
 	public static Configuration conf;
+	public static Configuration registedModules;
 
 	public static List<String> eastCompat;
 	public static List<String> southCompat;
@@ -90,9 +91,9 @@ public class Main extends JavaPlugin {
 
 		// get modules list yml file from plugin folder
 		File registedModulesFile = new File(getDataFolder(), "RegistedModules.yml");
-
 		// get fileConfiguration for that list
 		FileConfiguration FC = YamlConfiguration.loadConfiguration(registedModulesFile);
+		registedModules = YamlConfiguration.loadConfiguration(registedModulesFile);
 
 		// set list variable to list received from the config file
 		@SuppressWarnings("unchecked")
@@ -163,11 +164,12 @@ public class Main extends JavaPlugin {
 
 		int blockCount = 0;
 
-		for (int y = 0; y <= 0; y++) {
+		
 			for (int x = 0; x < 16; x++) {
+				for (int y = 0; y < 16; y++) {
 				for (int z = 0; z < 16; z++) {
 
-					materials[blockCount] = Bukkit.getWorld("world").getBlockAt(x, 4, z).getType().toString();
+					materials[blockCount] = Bukkit.getWorld("world").getBlockAt(x, 4 + y, z).getType().toString();
 					blockCount++;
 
 				}
@@ -181,11 +183,12 @@ public class Main extends JavaPlugin {
 
 		int blockCount = 0;
 
-		for (int y = 0; y <= 0; y++) {
+		
 			for (int x = 0; x < 16; x++) {
+				for (int y = 0; y < 16; y++) {
 				for (int z = 0; z < 16; z++) {
 
-					data[blockCount] = Bukkit.getWorld("world").getBlockAt(x, 4, z).getData();
+					data[blockCount] = Bukkit.getWorld("world").getBlockAt(x, 4 + y, z).getData();
 					blockCount++;
 
 				}
@@ -217,14 +220,16 @@ public class Main extends JavaPlugin {
 		int blockCount = 0;
 
 		for (int x = xOffset; x < xOffset + 16; x++) {
+			for (int y = 40; y < 40 + 16; y++) {
 			for (int z = zOffset; z < zOffset + 16; z++) {
+				
 
-				Bukkit.getWorld("world").getBlockAt(x, 10, z).setType(Material.getMaterial(blockArray[blockCount]));
+				Bukkit.getWorld("world").getBlockAt(x, y, z).setType(Material.getMaterial(blockArray[blockCount]));
 
-				Bukkit.getWorld("world").getBlockAt(x, 10, z).setData(blockDataArray[blockCount]);
+				Bukkit.getWorld("world").getBlockAt(x, y, z).setData(blockDataArray[blockCount]);
 
 				blockCount++;
-
+				}
 			}
 		}
 

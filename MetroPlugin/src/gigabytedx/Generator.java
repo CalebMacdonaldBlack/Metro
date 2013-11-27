@@ -13,6 +13,8 @@ public class Generator {
 	Main plugin;
 	Mod mod;
 	int prevX, prevZ;
+	int moduleStartingHeight = 5;
+	int moduleCheckHeight = 4;
 
 	public static List<String> moduleChuncks = new ArrayList<String>();
 
@@ -28,7 +30,7 @@ public class Generator {
 	}
 
 	private void Generate() {
-
+		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
 			@Override
@@ -70,10 +72,18 @@ public class Generator {
 					return compatablelist;
 				int checks = 1;
 				for (String module : moduleList) {
+					if(Main.registedModules.getList("RegistedModules").contains(module)){
+					try{
 					if (Main.moduleConfigurations.get(module).getBoolean("Ignore")) {
-						compatablelist.add(module);
+						for(int moduleChance = Main.moduleConfigurations.get(module).getInt("SpawnRate"); moduleChance>= 0; moduleChance--){
+							compatablelist.add(module);
+							}
 						System.out.println("RETURNIN");
 						return compatablelist;
+					}}catch(NullPointerException e ){
+						e.printStackTrace();
+						System.out.println("LIST SIZE" + moduleList.size());
+						System.out.println("Module!!" + module);
 					}
 					System.out.println("Module  " + module);
 					for (Object side : Main.moduleConfigurations.get(module).getList("Sides")) {
@@ -84,6 +94,10 @@ public class Generator {
 
 							if (s.equals("NIL")) {
 								System.out.println("NIL BREAK");
+							}else if(s.equals("END")){
+								for(int moduleChance = Main.moduleConfigurations.get(module).getInt("SpawnRate"); moduleChance>= 0; moduleChance--){
+									compatablelist.add(module);
+									}
 							} else {
 
 								if (containsModule(mod.getX() + getDirX((String) x) + getXCoordString(s), mod.getZ() + getDirZ((String) x) + getZCoordString(s)) && notPrev(x, s)) {
@@ -99,13 +113,15 @@ public class Generator {
 									System.out.println("ADDING");
 									checks = 1;
 									System.out.println("LIST SIZE!!!!!                   " + compatablelist.size());
-									compatablelist.add(module);
-
+									for(int moduleChance = Main.moduleConfigurations.get(module).getInt("SpawnRate"); moduleChance>= 0; moduleChance--){
+										compatablelist.add(module);
+										}
 								}
 							}
 						}
 					}
 
+				}
 				}
 				System.out.println("RETURNINGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" + compatablelist.size());
 				return compatablelist;
@@ -129,14 +145,16 @@ public class Generator {
 		int blockCount = 0;
 
 		for (int x = xOffset; x < xOffset + 16; x++) {
+			for (int y = 0; y <  16; y++) {
 			for (int z = zOffset; z < zOffset + 16; z++) {
+				
 
-				Bukkit.getWorld("world").getBlockAt(x, 10, z).setType(Material.getMaterial(blockArray[blockCount]));
+				Bukkit.getWorld("world").getBlockAt(x, moduleStartingHeight + y, z).setType(Material.getMaterial(blockArray[blockCount]));
 
-				Bukkit.getWorld("world").getBlockAt(x, 10, z).setData(blockDataArray[blockCount]);
+				Bukkit.getWorld("world").getBlockAt(x, moduleStartingHeight + y, z).setData(blockDataArray[blockCount]);
 
 				blockCount++;
-
+				}
 			}
 		}
 
@@ -147,7 +165,7 @@ public class Generator {
 		for (int x = xOffset; x < xOffset + 16; x++) {
 			for (int z = zOffset; z < zOffset + 16; z++) {
 
-				Bukkit.getWorld("world").getBlockAt(x, 5, z).setType(Material.BEDROCK);
+				Bukkit.getWorld("world").getBlockAt(x, moduleCheckHeight, z).setType(Material.BEDROCK);
 
 			}
 		}
@@ -159,7 +177,7 @@ public class Generator {
 		for (int x = xOffset; x < xOffset + 16; x++) {
 			for (int z = zOffset; z < zOffset + 16; z++) {
 
-				Bukkit.getWorld("world").getBlockAt(x, 5, z).setType(Material.REDSTONE_BLOCK);
+				Bukkit.getWorld("world").getBlockAt(x, moduleCheckHeight, z).setType(Material.REDSTONE_BLOCK);
 
 			}
 		}
@@ -203,6 +221,10 @@ public class Generator {
 			System.out.println("CHOSEN MODULE      " + temp);
 			if (Main.moduleConfigurations.get(temp).getBoolean("Ignore"))
 				return temp;
+			if (Main.moduleConfigurations.get(temp).getList((String) Main.moduleConfigurations.get(temp).getList("Sides").get(0)).get(0).equals("END")){
+				moduleChuncks.add((getDirX(side) / 16 + mod.getX() / 16) + "." + (getDirZ(side) / 16 + mod.getZ() / 16));
+				return temp;
+			}
 			for (Object sids : Main.moduleConfigurations.get(temp).getList("Sides")) {
 
 				for (Object string : Main.moduleConfigurations.get(temp).getList((String) sids)) {
